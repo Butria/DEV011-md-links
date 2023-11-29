@@ -14,9 +14,13 @@ function checkPath(route) {
     return new Promise((resolve, reject) => {
         const absolutePath = convertToAbsolute(route);
 
-        fs.access(absolutePath, fs.constants.F_OK)
-            .then(() => {
-                resolve(absolutePath);
+        fs.stat(absolutePath)
+            .then((stats) => {
+                if (stats.isFile()) {
+                    resolve(absolutePath);
+                } else {
+                    reject(new Error(`'${absolutePath}' is not a file.`));
+                }
             })
             .catch((error) => {
                 reject(new Error(`The path '${absolutePath}' does not exist.`));
@@ -34,15 +38,7 @@ function checkExtension(filePath) {
 }
 
 function readFile(filePath) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf8')
-            .then((data) => {
-                resolve(data);
-            })
-            .catch((error) => {
-                reject(new Error(`Error reading the file '${filePath}'.`));
-            });
-    });
+    return fs.readFile(filePath, 'utf8');
 }
 
 module.exports = { checkPath, checkExtension, readFile };

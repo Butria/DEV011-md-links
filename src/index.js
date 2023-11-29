@@ -16,18 +16,19 @@ function extractLinksFromMarkdown(content, file) {
     return matches;
 }
 
-async function mdLinks(filePath) {
-    try {
-        const absolutePath = await checkPath(filePath);
-        checkExtension(absolutePath);
+function mdLinks(filePath) {
+    let absolutePath;
 
-        const content = await readFile(absolutePath);
-        const links = extractLinksFromMarkdown(content, absolutePath);
-
-        return links;
-    } catch (error) {
-        throw error; // Rechazar la promesa con el error
-    }
+    return checkPath(filePath)
+        .then((resolvedPath) => {
+            absolutePath = resolvedPath;
+            checkExtension(absolutePath);
+            return readFile(absolutePath);
+        })
+        .then((content) => extractLinksFromMarkdown(content, absolutePath))
+        .catch((error) => {
+            throw new Error(`Error: ${error.message}`);
+        });
 }
 
 module.exports = mdLinks;
