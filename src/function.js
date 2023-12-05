@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
+const axios = require('axios');
 
 const isAbsolutePath = (route) => path.isAbsolute(route);
 
@@ -41,4 +42,18 @@ function readFile(filePath) {
     return fs.readFile(filePath, 'utf8');
 }
 
-module.exports = { checkPath, checkExtension, readFile };
+function validateLink(link) {
+    return axios.head(link.href)
+        .then((response) => ({
+            ...link,
+            status: response.status,
+            ok: response.status >= 200 && response.status < 400 ? 'ok' : 'fail',
+        }))
+        .catch((error) => ({
+            ...link,
+            status: error.response ? error.response.status : 'N/A',
+            ok: 'fail',
+        }));
+}
+
+module.exports = { checkPath, checkExtension, readFile, validateLink };

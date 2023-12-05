@@ -1,3 +1,4 @@
+const axios = require('axios');
 const { checkPath, checkExtension, readFile } = require('./function');
 
 function extractLinksFromMarkdown(content, file) {
@@ -16,7 +17,25 @@ function extractLinksFromMarkdown(content, file) {
     return matches;
 }
 
-function mdLinks(filePath) {
+function validateLinks(links) {
+    const requests = links.map((link) =>
+        axios.head(link.href)
+            .then((response) => ({
+                ...link,
+                status: response.status,
+                ok: response.status >= 200 && response.status < 400,
+            }))
+            .catch((error) => ({
+                ...link,
+                status: error.response ? error.response.status : 'N/A',
+                ok: false,
+            }))
+    );
+
+    return Promise.all(requests);
+}
+
+function mdLinks(filePath, validate = false) {
     let absolutePath;
 
     return checkPath(filePath)
@@ -25,7 +44,15 @@ function mdLinks(filePath) {
             checkExtension(absolutePath);
             return readFile(absolutePath);
         })
-        .then((content) => extractLinksFromMarkdown(content, absolutePath))
+        .then((content) => {
+            const links = extractLinksFromMarkdown(content, absolutePath);
+
+            if (validate) {
+                return validateLinks(links);
+            }
+
+            return links;
+        })
         .catch((error) => {
             throw new Error(`Error: ${error.message}`);
         });

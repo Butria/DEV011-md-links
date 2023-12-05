@@ -1,4 +1,8 @@
 const mdLinks = require('../src/index');
+const axios = require('axios');
+
+jest.mock('axios');
+
 
 
 describe('mdLinks', () => {
@@ -6,6 +10,13 @@ describe('mdLinks', () => {
   it('should...', () => {
     console.log('FIX ME!');
   });
+  
+  it('deberia rechazar cuando el path no existe', () => {
+    return mdLinks('larutanoexiste/brigi.md').catch((error) => {
+      const expectedErrorMessage = `Error: The path 'C:\\Users\\brigi\\DEV011-md-links\\larutanoexiste\\brigi.md' does not exist.`;
+      expect(error.message).toBe(expectedErrorMessage);
+    });
+  }); 
 
 });
 

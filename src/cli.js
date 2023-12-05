@@ -1,13 +1,15 @@
-const mdLinks = require('.');
+const mdLinks = require('./index');
 
-mdLinks('./README.md')
+const filePath = './README.md';
+const validateOption = process.argv.includes('--validate');
+
+mdLinks(filePath, validateOption)
   .then((links) => {
     console.log('Links encontrados:', links);
   })
   .catch((error) => {
     console.error('Error:', error.message);
   });
-
  
 
  
