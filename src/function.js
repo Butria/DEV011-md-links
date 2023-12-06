@@ -24,7 +24,7 @@ function checkPath(route) {
                 }
             })
             .catch((error) => {
-                reject(new Error(`The path '${absolutePath}' does not exist.`));
+                reject(new Error(`The path '${absolutePath}' no existe.`));
             });
     });
 }
