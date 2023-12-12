@@ -24,7 +24,7 @@ function checkPath(route) {
                 }
             })
             .catch((error) => {
-                reject(new Error(`The path '${absolutePath}' no existe.`));
+                reject(new Error(`The path '${absolutePath}' does not exist.`));
             });
     });
 }
@@ -56,4 +56,4 @@ function validateLink(link) {
         }));
 }
 
-module.exports = { checkPath, checkExtension, readFile, validateLink };
+module.exports = { checkPath, checkExtension, readFile, validateLink, convertToAbsolute };

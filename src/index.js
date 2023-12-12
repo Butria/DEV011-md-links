@@ -1,5 +1,7 @@
 const axios = require('axios');
-const { checkPath, checkExtension, readFile } = require('./function');
+const fs = require('fs').promises;
+const path = require('path');
+const { checkPath, checkExtension, readFile, convertToAbsolute } = require('./function');
 
 function extractLinksFromMarkdown(content, file) {
     const regex = /\[([^\]]+)\]\(([^)]+)\)/g;
@@ -35,7 +37,17 @@ function validateLinks(links) {
     return Promise.all(requests);
 }
 
-function mdLinks(filePath, validate = false) {
+function calculateStats(links) {
+    const totalLinks = links.length;
+    const uniqueLinks = [...new Set(links.map(link => link.href))].length;
+
+    return {
+        total: totalLinks,
+        unique: uniqueLinks,
+    };
+}
+
+function mdLinks(filePath, { validate, stats } = {}) {
     let absolutePath;
 
     return checkPath(filePath)
@@ -52,6 +64,14 @@ function mdLinks(filePath, validate = false) {
             }
 
             return links;
+        })
+        .then((result) => {
+            if (stats) {
+                const statistics = calculateStats(result);
+                return statistics;
+            }
+
+            return result;
         })
         .catch((error) => {
             throw new Error(`Error: ${error.message}`);
