@@ -1,5 +1,5 @@
 {
-  "name": "md-links",
+  "name": "md-links-butria",
   "version": "1.0.0",
   "bin": {
     "md-links": "./src/cli.js"
