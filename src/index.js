@@ -67,8 +67,15 @@ function mdLinks(filePath, { validate, stats } = {}) {
         })
         .then((result) => {
             if (stats) {
-                const statistics = calculateStats(result);
-                return statistics;
+                if (validate) {
+                    const statistics = calculateStats(result);
+                    const brokenLinks = result.filter(link => link.ok === false).length;
+                    statistics.broken = brokenLinks;
+                    return statistics;
+                } else {
+                    const statistics = calculateStats(result);
+                    return statistics;
+                }
             }
 
             return result;
